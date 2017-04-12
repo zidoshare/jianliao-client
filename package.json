@@ -1,0 +1,18 @@
+{
+  "name": "single-chat",
+  "version": "0.1.0",
+  "main": "./src/main.js",
+  "scripts": {
+    "start" : "electron ./src/",
+    "package" : "node ./electron-package",
+    "install" : "grunt create-windows-installer",
+    "build" :  "npm run package && npm run install"
+  },
+  "devDependencies": {
+    "electron": "^1.6.2",
+    "electron-packager": "^8.6.0",
+    "get-package-info": "^1.0.0",
+    "grunt": "^1.0.1",
+    "grunt-electron-installer": "^2.1.0"
+  }
+}
