@@ -2,22 +2,40 @@
 
 <head>
   <meta charset="utf-8">
+  <title>简聊</title>
   <link href="./lib/layui/css/layui.css" rel="stylesheet" type="text/css" />
+  <link href="./core.css" rel="stylesheet" type="text/css" />
+  <link href="./css/login.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
-  <h1>hello world</h1>
-  <button id="login">登录</button>
+  <div class="login-bg">
+    <canvas id="c"></canvas>
+  </div>
+  <div class="bottom">
+    <div class="login-frame">
+      <form class="layui-form">
+        <div class="layui-form-item"><input type="text" name="account" required lay-verify="required" placeholder="请输入账号" autocomplete="off" class="layui-input">          </div>
+        <div class="layui-form-item"><input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">          </div>
+        <div class="layui-form-item" style="text-align: center">
+          <button id="login" class="layui-btn  layui-btn-normal" style="width:100%" lay-submit lay-filter="formDemo">登录</button>
+          <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+        </div>
+        <div class="layui-form-item">
+          <span>没有账号？ <a href="#">立即注册</a></span>
+          <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+        </div>
+      </form>
+    </div>
+  </div>
   <!-- All of the Node.js APIs are available in this renderer process. -->
 </body>
+<script src="./js/jquery.min.js"></script>
+<script src="./js/draw.js"></script>
 <script src="./lib/layui/layui.js"></script>
 <script>
   require('../renderer-process/login')
-</script>
-<script>
-  layui.use(['layer'], function (layer) {
-    layer.msg('Hello World');
-  });
+
 </script>
 
 </html>

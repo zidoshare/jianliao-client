@@ -20,7 +20,11 @@ const dev = process.env.NODE_ENV === 'dev'
  * 例如createWindow({resizable:true}) 返回一个能创建可更改尺寸的窗口的方法
  */
 
-app.on('ready', createWindow({pathname:path.join(__dirname,'../ui','index.html')}))
+app.on('ready', createWindow({
+  pathname: path.join(__dirname, '../ui', 'index.html'),
+  width:445,
+  height:380,
+}))
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -30,3 +34,4 @@ app.on('window-all-closed', () => {
 
 
 require('./message/show-main')
+require('./message/hide-login')
