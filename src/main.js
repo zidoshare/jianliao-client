@@ -4,7 +4,6 @@ var handleStartupEvent = function () {
   if (process.platform !== 'win32') {
     return false;
   }
-
   var squirrelCommand = process.argv[1];
 
   switch (squirrelCommand) {

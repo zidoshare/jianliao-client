@@ -32,7 +32,7 @@ npm run package
 ## 生成安装文件：
 
 ````
-npm run install
+npm run deploy
 
 ````
 
@@ -51,7 +51,7 @@ npm run build
 
 npm run clean 会将release和package文件全部清除
 
-npm run clean:install 会将release清除
+npm run clean:deploy 会将release清除
 
 npm run clean:package 会将package文件清除
 
