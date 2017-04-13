@@ -45,6 +45,5 @@ var handleStartupEvent = function () {
 if (handleStartupEvent()) {
   return;
 }
-
 //执行窗口渲染
-require('./app/renderer')
+require('./app/main-process/renderer')

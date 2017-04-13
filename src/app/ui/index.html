@@ -2,8 +2,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>first app</title>
-  <link href="../lib/layui/css/layui.css" rel="stylesheet" type="text/css" />
+  <link href="./lib/layui/css/layui.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
@@ -11,7 +10,10 @@
   <button id="login">登录</button>
   <!-- All of the Node.js APIs are available in this renderer process. -->
 </body>
-<script src="../lib/layui/layui.js"></script>
+<script src="./lib/layui/layui.js"></script>
+<script>
+  require('../renderer-process/login')
+</script>
 <script>
   layui.use(['layer'], function (layer) {
     layer.msg('Hello World');
