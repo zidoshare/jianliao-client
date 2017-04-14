@@ -4,6 +4,7 @@
 
 const {BrowserWindow} = require('electron')
 const url = require('url')
+const path = require('path')
 const env = process.env.NODE_ENV
 const dev = (env === 'dev')
 
@@ -20,18 +21,13 @@ let defaultOptions = {
   dev: dev, //是否需要开发模式，会默认根据环境变量来更改
   protocol: 'file', //协议，更改为http则为网络协议
   slashes: true, //
+  icon:path.join(__dirname,'../../assets/logo.ico')
 }
 module.exports = (options) => {
   return () => {
     let opts = Object.assign({}, defaultOptions, options)
     let win = null
-    win = new BrowserWindow({
-      height: opts.height,
-      width: opts.width,
-      show: opts.show,
-      center: opts.center,
-      resizable: opts.resizable,
-    })
+    win = new BrowserWindow(opts)
     if (opts.dev)
       win.openDevTools()
     win.setMenu(opts.menu)

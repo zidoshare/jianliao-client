@@ -1,9 +1,8 @@
-const {showMain,hideLogin} = require('./msg')
+const {sendLoginSuccess} = require('./msg')
 
 
 const loginBtn = document.getElementById('login')
 
 loginBtn.addEventListener('click', function(event) {
-  hideLogin()
-  showMain()
+  sendLoginSuccess('account','password')
 })

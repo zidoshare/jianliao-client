@@ -1,12 +1,11 @@
-const {app, BrowserWindow} = require('electron')
+const {app, BrowserWindow, ipcMain} = require('electron')
 
-const createWindow = require('../tools/createWindow')
+const {createWindow, handleReplaceWindow} = require('../tools')
 const path = require('path')
 const url = require('url')
 
 const env = process.env.NODE_ENV
 const dev = process.env.NODE_ENV === 'dev'
-
 //通过createWindow方法构建一个生成默认窗口的方法
 
 /**
@@ -20,18 +19,27 @@ const dev = process.env.NODE_ENV === 'dev'
  * 例如createWindow({resizable:true}) 返回一个能创建可更改尺寸的窗口的方法
  */
 
-app.on('ready', createWindow({
-  pathname: path.join(__dirname, '../ui', 'index.html'),
-  width:445,
-  height:380,
-}))
+
+app.on('ready', () => {
+  let win = createWindow({
+    pathname: path.join(__dirname, '../ui', 'index.html'),
+    width: 445,
+    height: 380,
+    resizable: false,
+  })()
+  ipcMain.on('login-success', (event, ...arg) => {
+    let main = handleReplaceWindow(createWindow({
+      pathname: path.join(__dirname, '../ui', 'index.html'),
+      width: 445,
+      height: 380,
+      resizable: false,
+    }), win)
+    win = main
+  })
+})
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
-
-
-require('./message/show-main')
-require('./message/hide-login')

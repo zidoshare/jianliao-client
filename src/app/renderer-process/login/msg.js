@@ -1,11 +1,7 @@
 const msg = {
-  showMain:() => {
+  sendLoginSuccess:(...args) => {
     const ipcRenderer = require('electron').ipcRenderer
-    ipcRenderer.send('show-main')
-  },
-  hideLogin:() => {
-    const ipcRenderer = require('electron').ipcRenderer
-    ipcRenderer.send('hide-login')
+    ipcRenderer.send('login-success',...args)
   }
 }
 
