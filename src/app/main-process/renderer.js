@@ -21,6 +21,14 @@ const dev = process.env.NODE_ENV === 'dev'
 
 
 app.on('ready', () => {
+
+  // createWindow({
+  //   pathname: path.join(__dirname, '../ui', 'main.html'),
+  //   width: 312,
+  //   height: 520,
+  //   alwaysOnTop: true,
+  //   resizable: false,
+  // })()
   let win = createWindow({
     pathname: path.join(__dirname, '../ui', 'index.html'),
     width: 445,
@@ -29,9 +37,29 @@ app.on('ready', () => {
   })()
   ipcMain.on('login-success', (event, ...arg) => {
     let main = handleReplaceWindow(createWindow({
-      pathname: path.join(__dirname, '../ui', 'index.html'),
+      pathname: path.join(__dirname, '../ui', 'main.html'),
+      width: 312,
+      height: 520,
+      alwaysOnTop: true,
+      resizable: false,
+    }), win)
+    win = main
+  })
+  ipcMain.on('chat', (event, ...arg) => {
+    let chat = handleReplaceWindow(createWindow({
+      pathname: path.join(__dirname, '../ui', 'chat.html'),
+      width: 600,
+      height: 500,
+      alwaysOnTop: true,
+      resizable: false,
+    }), win)
+    win = chat
+  })
+  ipcMain.on('register', (event, ...args) => {
+    let main = handleReplaceWindow(createWindow({
+      pathname: path.join(__dirname, '../ui', 'register.html'),
       width: 445,
-      height: 380,
+      height: 430,
       resizable: false,
     }), win)
     win = main

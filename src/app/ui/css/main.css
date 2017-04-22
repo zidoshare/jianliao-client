@@ -1,0 +1,92 @@
+html,
+body {
+  width: 100%;
+  overflow: hidden;
+}
+
+.j-content {
+  width: 100%;
+  overflow: hidden;
+}
+
+.j-avatar-container {
+  width: 60px;
+  height: 60px;
+  position: relative;
+  margin: 5px;
+  border-radius: 50%;
+  -webkit-transition: box-shadow .3s ease-out;
+  transition: box-shadow .3s ease-out;
+}
+
+.j-avatar-container:after {
+  position: absolute;
+  left: 80px;
+  top: 0;
+  content: "";
+  background: #3e3e3e;
+  width: 1px;
+  height: 100%;
+}
+
+.j-avatar {
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  width: 100%;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+
+.j-avatar-container:hover {
+  box-shadow: 0 0 20px #ffffff;
+}
+
+.j-top {
+  padding: 20px 20px 10px 20px;
+  overflow: hidden;
+}
+
+.layui-tab-title{
+  text-align: center;
+}
+
+.j-top-info {
+  width: 180px;
+}
+
+.sign {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding-left: 38px;
+}
+
+.j-top>div {
+  float: left;
+}
+
+.j-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
+  z-index: 0;
+}
+
+.blur {
+  -webkit-filter: blur(5px);
+  /* Chrome, Opera */
+  -moz-filter: blur(5px);
+  -ms-filter: blur(5px);
+  filter: blur(5px);
+  z-index: 0;
+}
+
+.j-mid {
+  position: relative;
+  background: white;
+}

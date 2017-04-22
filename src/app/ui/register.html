@@ -17,12 +17,13 @@
       <form class="layui-form">
         <div class="layui-form-item"><input type="text" name="account" required lay-verify="required" placeholder="请输入账号" autocomplete="off" class="layui-input">          </div>
         <div class="layui-form-item"><input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">          </div>
+        <div class="layui-form-item"><input type="password" name="password" required lay-verify="required" placeholder="请重复输入密码" autocomplete="off" class="layui-input">          </div>
         <div class="layui-form-item" style="text-align: center">
-          <button id="login" class="layui-btn  layui-btn-normal" style="width:100%" lay-submit lay-filter="formDemo">登录</button>
+          <button id="register" class="layui-btn  layui-btn-normal" style="width:100%" lay-submit lay-filter="formDemo">注册</button>
           <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
         </div>
         <div class="layui-form-item">
-          <span>没有账号？ <a href="#" id="register">立即注册</a></span>
+          <span>已有账号？ <a href="#">立即登陆</a></span>
           <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
         </div>
       </form>
@@ -34,7 +35,7 @@
 <script src="./js/draw.js"></script>
 <script src="./lib/layui/layui.js"></script>
 <script>
-  require('../renderer-process/login')
+  require('../renderer-process/register')
 
 </script>
 
