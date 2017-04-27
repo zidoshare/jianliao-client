@@ -24,7 +24,7 @@
           </div>
         </div>
         <div class="layui-form-item">
-          <label class="sign">个性签名肯定很长啊</label>
+          <label class="sign j-item-i"><nobr>个性签名肯定很长啊awdefrefgegsrtg</nobr></label>
         </div>
       </div>
       <div style="clear:both"></div>
@@ -36,12 +36,35 @@
           <li class=""><a><i class="layui-icon">&#xe611;</i></a></li>
           <li class=""><a><i class="layui-icon">&#xe613;</i></a></li>
         </ul>
-        <div class="layui-tab-content">
+        <div class="layui-tab-content j-scroll">
           <div class="layui-tab-item layui-show">
-            <div class="layui-collapse">
+            <div class="layui-collapse" id="friend-container">
               <div class="layui-colla-item">
                 <h2 class="layui-colla-title">我的好友</h2>
-                <div class="layui-colla-content layui-show">内容区域</div>
+                <div class="layui-colla-content layui-show">
+                  <ul class="j-list">
+                    <li class="j-child j-item">
+                      <div class="min-container">
+                        <div class="j-avatar" style="background-image:url(./images/avatar.gif)"></div>
+                      </div>
+                      <div class="j-item-content">
+                        <div class="j-item-title">名字</div>
+                        <div class="j-item-i">
+                          <nobr>个性签名当然是非常非常非常得长的阿迪王地我副本饭也不</nobr>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="j-child j-item">
+                      <div class="min-container">
+                        <div class="j-avatar" style="background-image:url(./images/avatar.gif)"></div>
+                      </div>
+                      <div class="j-item-content">
+                        <div class="j-item-title">名字</div>
+                        <div class="j-item-i">个性签名</div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
               </div>
               <div class="layui-colla-item">
                 <h2 class="layui-colla-title">同学</h2>
@@ -71,6 +94,15 @@
   layui.use(['form', 'element'], function () {
     var form = layui.form();
   })
+  var Util = require('./js/util')
+  window.onload = function () {
+    Util.bind('.j-item', 'click', (target) => {
+      var doms = document.querySelectorAll('.j-item')
+      for (var i = 0; i < doms.length; i++)
+        Util.removeClass(doms[i], 'item-select')
+      Util.addClass(target, 'item-select')
+    }, '#friend-container')
+  }
 
 </script>
 

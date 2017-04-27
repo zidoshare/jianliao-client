@@ -48,7 +48,7 @@ body {
   overflow: hidden;
 }
 
-.layui-tab-title{
+.layui-tab-title {
   text-align: center;
 }
 
@@ -59,7 +59,6 @@ body {
 .sign {
   position: relative;
   display: block;
-  width: 100%;
   padding-left: 38px;
 }
 
@@ -89,4 +88,84 @@ body {
 .j-mid {
   position: relative;
   background: white;
+}
+
+ul.j-list {
+  margin: 0;
+}
+
+ul.j-list,
+ul.j-list>li {
+  list-style: none;
+}
+
+.j-child {
+  margin: 5px 0;
+  padding: 5px;
+}
+
+.j-item {
+  background: white;
+  transition: background .3s ease-in-out;
+  -webkit-transition: background .3s ease-in-out;
+  cursor: pointer;
+}
+
+.j-item:hover {
+  background: #eeeeee;
+}
+
+.j-item>div:not(:last-child) {
+  float: left;
+}
+
+.j-item::before {
+  content: '';
+}
+
+.j-item::after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+.min-container {
+  width: 40px;
+  height: 40px;
+  position: relative;
+}
+
+.j-item-content {
+  margin-left: 50px;
+}
+
+.j-item-title {
+  color: black;
+}
+
+.j-item-i {
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.layui-tab-content {
+  padding: 10px 0;
+}
+
+.layui-colla-content {
+  padding: 0;
+}
+
+.j-scroll {
+  overflow-x: hidden;
+  overflow: auto;
+  height: 304px;
+  width: 100%;
+}
+
+.item-select{
+  background: #eeeeee;
 }
