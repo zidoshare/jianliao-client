@@ -29,16 +29,6 @@ body {
   height: 100%;
 }
 
-.j-avatar {
-  border-radius: 50%;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  width: 100%;
-  background-repeat: no-repeat;
-  z-index: 1;
-}
-
 .j-avatar-container:hover {
   box-shadow: 0 0 20px #ffffff;
 }
@@ -109,6 +99,8 @@ ul.j-list>li {
   transition: background .3s ease-in-out;
   -webkit-transition: background .3s ease-in-out;
   cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .j-item:hover {
@@ -131,11 +123,7 @@ ul.j-list>li {
   visibility: hidden;
 }
 
-.min-container {
-  width: 40px;
-  height: 40px;
-  position: relative;
-}
+
 
 .j-item-content {
   margin-left: 50px;

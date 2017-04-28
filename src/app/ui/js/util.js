@@ -48,7 +48,7 @@ var Util = {
    * target:DOM节点、css选择器、由DOM节点组成的数组、由css选择器组成的数组
    * eventName:事件名
    * func:回调函数
-   * container:（可选）当明确知道绑定目标为多个时，应该将此值设置为公用父节点，可大幅优化性能
+   * container:（可选）当明确知道绑定目标为多个时，应该将此值设置为公用父节点，可大幅优化性能,可以是dom节点或者css选择器
    */
   bind: (target, eventName, func, container) => {
     var list = []
@@ -73,6 +73,7 @@ var Util = {
       domList.map((d) => {
         d.addEventListener(eventName, (e) => {
           func(e.target)
+          e.stopPropagation()
         })
       })
       return
@@ -95,6 +96,7 @@ var Util = {
             arguments.callee()
           } else
             func(eventTarget)
+            e.stopPropagation()
         })()
       }
     }

@@ -43,6 +43,9 @@ app.on('ready', () => {
       alwaysOnTop: true,
       resizable: false,
     }), win)
+    main.on('close',()=>{
+      app.quit()
+    })
     win = main
   })
   ipcMain.on('chat', (event, ...arg) => {
@@ -63,6 +66,21 @@ app.on('ready', () => {
       resizable: false,
     }), win)
     win = main
+  })
+  ipcMain.on('chat-with',(event,...args) => {
+    createWindow({
+      pathname: path.join(__dirname, '../ui', 'chat.html'),
+      width: 600,
+      height: 535,
+      resizable: false,
+      frame:false,
+    })()
+  })
+  ipcMain.on('close-chat',(event) => {
+    BrowserWindow.getFocusedWindow().close()
+  })
+  ipcMain.on('minimize-chat',(event) => {
+    BrowserWindow.getFocusedWindow().minimize()
   })
 })
 

@@ -1,7 +1,8 @@
 const createMsg = require('../../tools/createMsg')
 
 const msg = {
-  toChat:createMsg('chat-with'),
+  closeChat:createMsg('close-chat'),
+  minimizeChat:createMsg('minimize-chat'),
 }
 
 module.exports = msg
