@@ -23,18 +23,27 @@
         </div>
         <div class="layui-form-item">
           <span>没有账号？ <a href="#" id="register">立即注册</a></span>
-          <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+          <button onclick="connect" class="layui-btn layui-btn-primary">连接</button>
+          <button onclick="disConnect" class="layui-btn layui-btn-primary">断开连接</button>
         </div>
       </form>
     </div>
   </div>
   <!-- All of the Node.js APIs are available in this renderer process. -->
 </body>
-<script src="./js/jquery.min.js"></script>
 <script src="./js/draw.js"></script>
 <script src="./lib/layui/layui.js"></script>
+<scrip src="./js/stomp.js"></scrip>
+<scrip src="./js/sockjs-latest.min.js"></scrip>
 <script>
   require('../renderer-process/login')
+  window.onload = function(){
+    var atompClient = null
+  }
+
+  function connect(){
+    var socket = new SockJs('/endpointBroadcast')
+  }
 
 </script>
 
