@@ -89,12 +89,13 @@
   <!-- All of the Node.js APIs are available in this renderer process. -->
 </body>
 <script src="./lib/layui/layui.js"></script>
+<script type="text/javascript" src="./js/jquery.min.js"></script>
 <script>
   layui.use(['form', 'element'], function () {
     var form = layui.form();
   })
   var Util = require('./js/util')
-   var toChat = require('../renderer-process/main')
+  var toChat = require('../renderer-process/main')
   window.onload = function () {
     Util.bind('.j-item', 'click', (target) => {
       var doms = document.querySelectorAll('.j-item')
@@ -107,9 +108,12 @@
       console.log('双击')
       toChat()
     })
-  }
 
- 
+    $.get('/auth/now',{},function(data,status){
+      console.log(status)
+      console.log(data)
+    })
+  }
 
 </script>
 

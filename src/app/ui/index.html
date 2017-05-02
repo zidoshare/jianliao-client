@@ -14,37 +14,44 @@
   </div>
   <div class="bottom">
     <div class="login-frame">
-      <form class="layui-form">
-        <div class="layui-form-item"><input type="text" name="account" required lay-verify="required" placeholder="请输入账号" autocomplete="off" class="layui-input">          </div>
-        <div class="layui-form-item"><input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">          </div>
+      <div class="layui-form">
+        <div class="layui-form-item"><input id="username" type="text" name="account" required lay-verify="required" placeholder="请输入账号" autocomplete="off" class="layui-input">          </div>
+        <div class="layui-form-item"><input id="password" type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">          </div>
         <div class="layui-form-item" style="text-align: center">
           <button id="login" class="layui-btn  layui-btn-normal" style="width:100%" lay-submit lay-filter="formDemo">登录</button>
           <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
         </div>
         <div class="layui-form-item">
           <span>没有账号？ <a href="#" id="register">立即注册</a></span>
-          <button onclick="connect" class="layui-btn layui-btn-primary">连接</button>
-          <button onclick="disConnect" class="layui-btn layui-btn-primary">断开连接</button>
         </div>
-      </form>
+      </div>
     </div>
   </div>
   <!-- All of the Node.js APIs are available in this renderer process. -->
 </body>
 <script src="./js/draw.js"></script>
 <script src="./lib/layui/layui.js"></script>
-<scrip src="./js/stomp.js"></scrip>
-<scrip src="./js/sockjs-latest.min.js"></scrip>
+<!-- <script type="text/javascript" src="./js/jquery.min.js"></script> -->
 <script>
-  require('../renderer-process/login')
-  window.onload = function(){
-    var atompClient = null
-  }
-
-  function connect(){
-    var socket = new SockJs('/endpointBroadcast')
-  }
-
+  const Msg = require('../renderer-process/login')
+  const Util = require('./js/util')
+  Util.bind('#login', 'click', function() {
+    Util.post('/auth/login', {
+      username: document.getElementById('username').value,
+      password: document.getElementById('password').value,
+    }).then(function(json){
+      console.log(json)
+    })
+  })
+  // $('#login').bind('click', function() {
+  //   $.post('http://localhost:8000'+'/auth/login', {
+  //     username: document.getElementById('username').value,
+  //     password: document.getElementById('password').value,
+  //   },function(data,status){
+  //     console.log(data)
+  //   })
+  // })
+  Util.bind('#register','click',Msg.toRegister)
 </script>
 
 </html>

@@ -1,6 +1,7 @@
-var Util = {
+const Http = require('./Http')
+const Util = {
   isDOM: (obj) => (
-  (typeof obj === 'object') ? (obj instanceof HTMLElement) : (obj && typeof obj === 'object' && obj.nodeType === 1 && typeof obj.nodeName)
+    (typeof obj === 'object') ? (obj instanceof HTMLElement) : (obj && typeof obj === 'object' && obj.nodeType === 1 && typeof obj.nodeName)
   ),
   isArray: function(obj) {
     return obj && typeof obj === 'object' &&
@@ -96,7 +97,7 @@ var Util = {
             arguments.callee()
           } else
             func(eventTarget)
-            e.stopPropagation()
+          e.stopPropagation()
         })()
       }
     }
@@ -120,12 +121,94 @@ var Util = {
     } else {
       Util.addClass(obj, cls);
     }
+  },
+  isUrl: function(url) {
+    var strRegex = "^((https|http|ftp|rtsp|mms)?://)" + "?(([0-9a-z_!~*'().&=+$%-]+: )?[0-9a-z_!~*'().&=+$%-]+@)?" //ftp的user@
+      + "(([0-9]{1,3}\.){3}[0-9]{1,3}" // IP形式的URL- 199.194.52.184
+      + "|" // 允许IP和DOMAIN（域名）
+      + "([0-9a-z_!~*'()-]+\.)*" // 域名- www.
+      + "([0-9a-z][0-9a-z-]{0,61})?[0-9a-z]\." // 二级域名
+      + "[a-z]{2,6})" // first level domain- .com or .museum
+      + "(:[0-9]{1,4})?" // 端口- :80
+      + "((/?)|" // a slash isn't required if there is no file name
+      + "(/[0-9a-z_!~*'().;?:@&=+$,%#-]+)+/?)$"
+    return new RegExp(strRegex).test(url)
+  },
+  get: function(url, params, headers) {
+    if (!Util.isUrl(url))
+      url = 'http://localhost:8000' + url
+    if (params) {
+      let paramsArray = [];
+      //encodeURIComponent
+      Object.keys(params).forEach(key => paramsArray.push(key + '=' + params[key]))
+      if (url.search(/\?/) === -1) {
+        url += '?' + paramsArray.join('&')
+      } else {
+        url += '&' + paramsArray.join('&')
+      }
+    }
+    return new Promise(function(resolve, reject) {
+      fetch(url, {
+          method: 'GET',
+          headers: headers || Http.jsonHeaders,
+          credentials: 'include',
+        })
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            reject({
+              status: response.status
+            })
+          }
+        })
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject({
+            status: -1
+          });
+        })
+    })
+  },
+  post: function(url, params, headers) {
+    if (!Util.isUrl(url)) {
+      url = 'http://localhost:8000' + url
+    }
+    let data = ''
+      //encodeURIComponent
+    if (params) {
+      let paramsArray = []
+      Object.keys(params).forEach(key => paramsArray.push(key + '=' + params[key]))
+      data += paramsArray.join('&')
+    }
+    return new Promise(function(resolve, reject) {
+      fetch(url, {
+          method: 'POST',
+          headers: headers || Http.jsonHeaders,
+          body: data,
+        })
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            reject({
+              status: response.status
+            })
+          }
+        })
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject({
+            status: -1
+          });
+        })
+    })
   }
 }
-
-
-
-
 
 
 

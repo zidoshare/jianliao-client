@@ -1,1 +1,1 @@
-require('./login')
+module.exports = require('./login')
