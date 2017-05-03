@@ -21,7 +21,7 @@ body {
 
 .j-avatar-container:after {
   position: absolute;
-  left: 80px;
+  left: 75px;
   top: 0;
   content: "";
   background: #3e3e3e;
@@ -49,7 +49,7 @@ body {
 .sign {
   position: relative;
   display: block;
-  padding-left: 38px;
+  padding-left: 15px;
 }
 
 .j-top>div {
@@ -131,6 +131,8 @@ ul.j-list>li {
 
 .j-item-title {
   color: black;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .j-item-i {
@@ -156,4 +158,14 @@ ul.j-list>li {
 
 .item-select{
   background: #eeeeee;
+}
+
+.loading{
+  height: 200px;
+  text-align: center;
+  line-height: 200px;
+}
+
+layui-form-label{
+  text-align:left !important;
 }

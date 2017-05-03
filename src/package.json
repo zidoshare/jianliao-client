@@ -1,5 +1,8 @@
 {
   "name": "简聊",
   "version": "0.1.0",
-  "main": "./main.js"
+  "main": "./main.js",
+  "dependencies": {
+    "mustache": "^2.3.0"
+  }
 }

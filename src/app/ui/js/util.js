@@ -90,6 +90,10 @@ const Util = {
         result = true;
       if (!Util.inArray(domList, eventTarget)) {
         (function() {
+          if (eventTarget == null) {
+            e.stopPropagation()
+            return
+          }
           eventTarget = eventTarget.parentNode
           if (eventTarget == containerDom)
             return
@@ -150,7 +154,7 @@ const Util = {
     return new Promise(function(resolve, reject) {
       fetch(url, {
           method: 'GET',
-          headers: headers || Http.jsonHeaders,
+          headers: headers || Http.getHeaders,
           credentials: 'include',
         })
         .then((response) => {
@@ -186,13 +190,15 @@ const Util = {
     return new Promise(function(resolve, reject) {
       fetch(url, {
           method: 'POST',
-          headers: headers || Http.jsonHeaders,
+          headers: headers || Http.dataHeaders,
           body: data,
+          credentials: 'include',
         })
         .then((response) => {
           if (response.ok) {
             return response.json();
           } else {
+            console.err(response)
             reject({
               status: response.status
             })
@@ -207,6 +213,21 @@ const Util = {
           });
         })
     })
+  },
+  autoRefresh: function(dom, ...args) {
+    var i = 0
+    console.log(args)
+    function animation() {
+      if (i >= args.length)
+        i = 0
+      dom.innerHTML = args[i++]
+      if(dom == null){
+        console.log('stop')
+        return
+      }
+      window.requestAnimationFrame(animation)
+    }
+    animation()
   }
 }
 

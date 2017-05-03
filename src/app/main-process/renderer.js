@@ -23,7 +23,7 @@ const dev = process.env.NODE_ENV === 'dev'
  * 因为一般是使用事件回调创建窗口，所以使用这种方式，能够跟上options
  * 例如createWindow({resizable:true}) 返回一个能创建可更改尺寸的窗口的方法
  */
-
+let ses = null //session保存变量
 
 app.on('ready', () => {
 

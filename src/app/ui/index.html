@@ -35,12 +35,13 @@
 <script>
   const Msg = require('../renderer-process/login')
   const Util = require('./js/util')
+  const remote = require('electron').remote
   Util.bind('#login', 'click', function() {
     Util.post('/auth/login', {
       username: document.getElementById('username').value,
       password: document.getElementById('password').value,
-    }).then(function(json){
-      console.log(json)
+    }).then(function(data) {
+      Msg.sendLoginSuccess()
     })
   })
   // $('#login').bind('click', function() {

@@ -10,24 +10,7 @@
 
 <body>
   <div class="j-content">
-    <div class="j-top">
-      <img class="j-bg blur" src="./images/bg0.jpg" alt="none" />
-      <div></div>
-      <div class="j-avatar-container">
-        <div class="j-avatar" style="background-image:url(./images/avatar.gif)"></div>
-      </div>
-      <div class="j-top-info layui-form">
-        <div class="layui-form-item">
-          <label class="layui-form-label">我的名字</label>
-          <div class="layui-input-block">
-            <input type="checkbox" name="switch" lay-skin="switch" lay-text="在线|隐身" checked>
-          </div>
-        </div>
-        <div class="layui-form-item">
-          <label class="sign j-item-i"><nobr>个性签名肯定很长啊awdefrefgegsrtg</nobr></label>
-        </div>
-      </div>
-      <div style="clear:both"></div>
+    <div class="j-top clear-fix" id="j-top">
     </div>
     <div class="j-mid">
       <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
@@ -39,41 +22,7 @@
         <div class="layui-tab-content j-scroll">
           <div class="layui-tab-item layui-show">
             <div class="layui-collapse" id="friend-container">
-              <div class="layui-colla-item">
-                <h2 class="layui-colla-title">我的好友</h2>
-                <div class="layui-colla-content layui-show">
-                  <ul class="j-list">
-                    <li class="j-child j-item">
-                      <div class="min-container">
-                        <div class="j-avatar" style="background-image:url(./images/avatar.gif)"></div>
-                      </div>
-                      <div class="j-item-content">
-                        <div class="j-item-title">名字</div>
-                        <div class="j-item-i">
-                          <nobr>个性签名当然是非常非常非常得长的阿迪王地我副本饭也不</nobr>
-                        </div>
-                      </div>
-                    </li>
-                    <li class="j-child j-item">
-                      <div class="min-container">
-                        <div class="j-avatar" style="background-image:url(./images/avatar.gif)"></div>
-                      </div>
-                      <div class="j-item-content">
-                        <div class="j-item-title">名字</div>
-                        <div class="j-item-i">个性签名</div>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div class="layui-colla-item">
-                <h2 class="layui-colla-title">同学</h2>
-                <div class="layui-colla-content layui-show">内容区域</div>
-              </div>
-              <div class="layui-colla-item">
-                <h2 class="layui-colla-title">同事</h2>
-                <div class="layui-colla-content layui-show">内容区域</div>
-              </div>
+              <div class="loading" id="friend-loading"></div>
             </div>
           </div>
           <div class="layui-tab-item">
@@ -89,29 +38,79 @@
   <!-- All of the Node.js APIs are available in this renderer process. -->
 </body>
 <script src="./lib/layui/layui.js"></script>
-<script type="text/javascript" src="./js/jquery.min.js"></script>
+<script id="mine-template" type="x-tmpl-mustache">
+  <img class="j-bg blur" src="{{skin}}" alt="none" />
+    <div></div>
+    <div class="j-avatar-container">
+      <div class="j-avatar" style="background-image:url({{imageUrl}})"></div>
+    </div>
+    <div class="j-top-info layui-form">
+      <div class="layui-form-item">
+        <label class="layui-form-label">{{nickname}}</label>
+        <div class="layui-input-block">
+          <input type="checkbox" name="switch" lay-skin="switch" lay-text="在线|隐身" checked>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="sign j-item-i"><nobr>{{sign}}</nobr></label>
+      </div>
+    </div>
+</script>
+<script id="container-template" type="x-tmpl-mustache">
+  {{#data}}
+    <div class="layui-colla-item">
+    <h2 class="layui-colla-title">{{name}}</h2>
+    <div class="layui-colla-content">
+      <ul class="j-list">
+      {{#users}}
+        <li class="j-child j-item">
+          <div class="min-container">
+            <div class="j-avatar" style="background-image:url({{imageUrl}})"></div>
+          </div>
+          <div class="j-item-content">
+            <div class="j-item-title"><nobr>{{nickname}}</nobr></div>
+            <div class="j-item-i">
+              <nobr>{{sign}}</nobr>
+            </div>
+          </div>
+        </li>
+      {{/users}}
+      </ul>
+    </div>
+  </div>
+  {{/data}}
+</script>
 <script>
-  layui.use(['form', 'element'], function () {
-    var form = layui.form();
-  })
+
   var Util = require('./js/util')
   var toChat = require('../renderer-process/main')
-  window.onload = function () {
-    Util.bind('.j-item', 'click', (target) => {
-      var doms = document.querySelectorAll('.j-item')
-      for (var i = 0; i < doms.length; i++)
-        Util.removeClass(doms[i], 'item-select')
-      Util.addClass(target, 'item-select')
-    }, '#friend-container')
-
-    Util.bind('.j-item','dblclick',(target) => {
-      console.log('双击')
-      toChat()
+  var Mustache = require('mustache')
+  window.onload = function() {
+    Util.post('/api/user/now').then(function(json) {
+      var template = document.getElementById('mine-template').innerHTML;
+      Mustache.parse(template); // optional, speeds up future uses
+      var rendered = Mustache.render(template, json.data);
+      document.getElementById('j-top').innerHTML = rendered;
     })
+    Util.autoRefresh(document.getElementById('friend-loading'),'正在加载.','正在加载..','正在加载...')
+    Util.post('/api/user/friends/index').then(function(json) {
+      var template = document.getElementById('container-template').innerHTML;
+      Mustache.parse(template); // optional, speeds up future uses
+      var rendered = Mustache.render(template, json);
+      //document.getElementById('friend-container').innerHTML = rendered;
+      Util.bind('.j-item', 'click', (target) => {
+        var doms = document.querySelectorAll('.j-item')
+        for (var i = 0; i < doms.length; i++)
+          Util.removeClass(doms[i], 'item-select')
+        Util.addClass(target, 'item-select')
+      }, '#friend-container')
 
-    $.get('/auth/now',{},function(data,status){
-      console.log(status)
-      console.log(data)
+      Util.bind('.j-item', 'dblclick', (target) => {
+        toChat()
+      })
+      layui.use(['form', 'element'], function() {
+        var form = layui.form();
+      })
     })
   }
 
