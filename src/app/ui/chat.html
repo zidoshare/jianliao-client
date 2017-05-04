@@ -12,45 +12,14 @@
   <div class="container clear-fix" style="background-image:url(./images/background/1.jpg)">
     <div class="title-bar clear-fix">
 
-      <div class="title-bar-content pull-left clear-fix">
-        <div class="pull-left">
-          <div class="j-avatar-container pull-left">
-            <div class="j-avatar" style="background-image:url(./images/avatar.gif)"></div>
-          </div>
-          <div class="content-info pull-left">
-            <div class="text-ellipsis j-slice-long" style="margin: 5px;">
-              <nobr>别人的名字</nobr>
-            </div>
-            <div class="text-ellipsis j-slice-long" style="margin: 15px 5px 0 5px;">
-              <nobr>个性签名肯定很长啊awdefrefgegsrtg</nobr>
-            </div>
-          </div>
-        </div>
+      <div class="title-bar-content pull-left clear-fix" id="top-friend">
       </div>
       <div class="title-bar-tools pull-right">
         <div id="minimize"><i class="layui-icon">&#8722;</i></div>
         <div id="close"><i class="layui-icon">&#x1006;</i> </div>
       </div>
     </div>
-    <div class="content-area">
-      <div class="message-box message-box-left">
-        <div class="min-container">
-          <div class="j-avatar" style="background-image:url(./images/avatar.gif)"></div>
-        </div>
-        <cite>别人的名字 <i>2017-04-28 17:21:48</i></cite>
-        <div class="message-info">
-          这是别人发送的内容
-        </div>
-      </div>
-      <div class="message-box message-box-right">
-        <div class="min-container">
-          <div class="j-avatar" style="background-image:url(./images/avatar.gif)"></div>
-        </div>
-        <cite>我的名字 <i>2017-04-28 17:21:48</i></cite>
-        <div class="message-info">
-          这是我发送的内容
-        </div>
-      </div>
+    <div class="content-area" id="content-area">
     </div>
     <div class="mid-tools">
       <span><i class="layui-icon">&#xe60c;</i></span>
@@ -61,19 +30,148 @@
       <span><i class="layui-icon">&#xe64e;</i></span>
     </div>
     <div class="edit-area">
-      <textarea rows="3" autofocus style="resize:none;"></textarea>
+      <textarea id="content" rows="3" autofocus style="resize:none;"></textarea>
     </div>
     <div class="footer clear-fix">
-      <div class="pull-right"><a class="layui-btn layui-btn-small ">发送消息</a></div>
-      <div class="pull-right"><a class="layui-btn layui-btn-small ">清空内容</a></div>
-
+      <div class="pull-right"><a class="layui-btn layui-btn-small " id="send-message">发送消息</a></div>
     </div>
   </div>
 </body>
+<script id="friend-template" type="x-tmpl-mustache">
+    <div class="pull-left">
+          <div class="j-avatar-container pull-left">
+            <div class="j-avatar" style="background-image:url({{imageUrl}})"></div>
+          </div>
+          <div class="content-info pull-left">
+            <div class="text-ellipsis j-slice-long" style="margin: 5px;">
+              <nobr>{{nickname}}</nobr>
+            </div>
+            <div class="text-ellipsis j-slice-long" style="margin: 15px 5px 0 5px;">
+              <nobr>{{sign}}</nobr>
+            </div>
+          </div>
+        </div>
+</script>
+<script id="I-template" type="x-tmpl-mustache">
+  <div class="message-box message-box-right">
+      <div class="min-container">
+        <div class="j-avatar" style="background-image:url({{imageUrl}})"></div>
+      </div>
+      <cite>{{nickname}} <i>{{formatDate}}</i></cite>
+      <div class="message-info">
+          {{message}}
+      </div>
+    </div>
+</script>
+<script id="U-template" type="x-tmpl-mustache">
+  <div class="message-box message-box-left">
+      <div class="min-container">
+        <div class="j-avatar" style="background-image:url({{imageUrl}})"></div>
+      </div>
+      <cite>{{nickname}} <i>{{formatDate}}</i></cite>
+      <div class="message-info">
+          {{message}}
+      </div>
+    </div>
+</script>
 <script src="./lib/layui/layui.js"></script>
+<script type="text/javascript" src="./js/jquery.min.js"></script>
 <script>
   var Msg = require('../renderer-process/chat')
   var Util = require('./js/util')
+  var ipc = require('electron').ipcRenderer
+  var Mustache = require('mustache')
+  var I = {
+    username:null,
+    nickname:null,
+    imageUrl:null,
+    formatDate:null,
+    message:null,
+  }
+  let U = {
+    username:null,
+    nickname:null,
+    imageUrl:null,
+    formatDate:null,
+    message:null,
+  }
+  ipc.on('initial', function(event, username, nickname) {
+    U.username = username
+    U.nickname = nickname
+    function updateFriend() {
+      Util.post('/api/user/getUser', {
+        username: U.username
+      }).then(function(json) {
+        var data = json.data
+        U.imageUrl = data.imageUrl
+        U.nickname = data.nickname
+        var template = document.getElementById('friend-template').innerHTML
+        Mustache.parse(template); // optional, speeds up future uses
+        var rendered = Mustache.render(template, json.data)
+        document.getElementById('top-friend').innerHTML = rendered
+      })
+    }
+
+    function updateUser() {
+      Util.post('/api/user/now').then(function(json) {
+        var data = json.data
+        I.username = data.username
+        I.nickname = data.nickname
+        I.imageUrl = data.imageUrl
+      })
+    }
+
+    function connect() {
+      Util.socket('/chat', {
+        address: '/user/queue/greetings',
+        func: function(response) {
+          data = JSON.parse(response.body)
+          if (data.type == 'add_user' || data.type == 'friend_update') {
+            updateFriend()
+            updateUser()
+          }
+        }
+      },{
+        address:'/user/queue/chat',
+        func: function(response){
+          data = JSON.parse(response.body)
+          if(data.fromUser == U.username){
+            var data = JSON.parse(response.body)
+            U.formatDate = data.formatDate
+            U.message = data.message
+            var template = document.getElementById('U-template').innerHTML
+            Mustache.parse(template); // optional, speeds up future uses
+            var rendered = Mustache.render(template, U)
+            $('#content-area').append(rendered)
+          }
+        }
+      })
+    }
+    function sendMessage(message){
+      Util.post('/api/user/send',{
+        content:message,
+        username:U.username,
+      }).then(function(response){
+        var data = response.data
+        I.formatDate = data.formatDate
+        I.message = data.message
+        var template = document.getElementById('I-template').innerHTML
+        Mustache.parse(template); // optional, speeds up future uses
+        var rendered = Mustache.render(template, I)
+        $('#content-area').append(rendered)
+      })
+    }
+
+    updateUser()
+    connect()
+    updateFriend()
+
+    Util.bind('#send-message','click',function(){
+        var message = document.getElementById('content').value
+        sendMessage(message)
+        document.getElementById('content').value = null
+    })
+  })
   window.onload = function () {
     Util.bind('#minimize', 'click', () => {
       Msg.minimizeChat()
@@ -82,7 +180,6 @@
       Msg.closeChat()
     })
   }
-
 </script>
 
 </html>

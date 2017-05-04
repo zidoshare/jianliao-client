@@ -15,15 +15,15 @@
   <div class="bottom">
     <div class="login-frame">
       <form class="layui-form">
-        <div class="layui-form-item"><input type="text" name="account" required lay-verify="required" placeholder="请输入账号" autocomplete="off" class="layui-input">          </div>
+        <div class="layui-form-item"><input type="text" name="username" required lay-verify="required" placeholder="请输入账号" autocomplete="off" class="layui-input">          </div>
+        <div class="layui-form-item"><input type="text" name="nickname" required lay-verify="required" placeholder="请输入昵称" autocomplete="off" class="layui-input">          </div>
         <div class="layui-form-item"><input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">          </div>
-        <div class="layui-form-item"><input type="password" name="password" required lay-verify="required" placeholder="请重复输入密码" autocomplete="off" class="layui-input">          </div>
         <div class="layui-form-item" style="text-align: center">
-          <button id="register" class="layui-btn  layui-btn-normal" style="width:100%" lay-submit lay-filter="formDemo">注册</button>
+          <button id="register" class="layui-btn  layui-btn-normal" style="width:100%" lay-submit lay-filter="register">注册</button>
           <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
         </div>
         <div class="layui-form-item">
-          <span>已有账号？ <a href="#">立即登陆</a></span>
+          <span>已有账号？ <a id="to-login" style="cursor: pointer">立即登陆</a></span>
           <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
         </div>
       </form>
@@ -35,8 +35,28 @@
 <script src="./js/draw.js"></script>
 <script src="./lib/layui/layui.js"></script>
 <script>
-  require('../renderer-process/register')
-
+  var Util = require('./js/util')
+  var Msg = require('../renderer-process/register')
+  window.onload = function() {
+    Util.bind('#to-login', 'click', function() {
+      Msg.toLogin()
+    })
+    layui.use('form', function() {
+      var form = layui.form()
+      form.on('submit(register)', function(data) {
+        Util.post('/api/pub/register', data.field).then(function(response) {
+          layui.use('layer', function() {
+            var layer = layui.layer;
+            layer.msg(response.message, {
+              icon: 1
+            })
+          })
+          Msg.toLogin()
+        }, Util.defaultReject)
+        return false
+      })
+    })
+  }
 </script>
 
 </html>

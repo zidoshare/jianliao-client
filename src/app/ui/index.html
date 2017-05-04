@@ -14,17 +14,17 @@
   </div>
   <div class="bottom">
     <div class="login-frame">
-      <div class="layui-form">
-        <div class="layui-form-item"><input id="username" type="text" name="account" required lay-verify="required" placeholder="请输入账号" autocomplete="off" class="layui-input">          </div>
-        <div class="layui-form-item"><input id="password" type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">          </div>
+      <form class="layui-form">
+        <div class="layui-form-item"><input type="text" name="username" required lay-verify="required" placeholder="请输入账号" autocomplete="off" class="layui-input">          </div>
+        <div class="layui-form-item"><input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">          </div>
         <div class="layui-form-item" style="text-align: center">
-          <button id="login" class="layui-btn  layui-btn-normal" style="width:100%" lay-submit lay-filter="formDemo">登录</button>
+          <button id="login" class="layui-btn  layui-btn-normal" style="width:100%" lay-submit lay-filter="login">登录</button>
           <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
         </div>
         <div class="layui-form-item">
           <span>没有账号？ <a href="#" id="register">立即注册</a></span>
         </div>
-      </div>
+      </form>
     </div>
   </div>
   <!-- All of the Node.js APIs are available in this renderer process. -->
@@ -36,14 +36,16 @@
   const Msg = require('../renderer-process/login')
   const Util = require('./js/util')
   const remote = require('electron').remote
-  Util.bind('#login', 'click', function() {
-    Util.post('/auth/login', {
-      username: document.getElementById('username').value,
-      password: document.getElementById('password').value,
-    }).then(function(data) {
-      Msg.sendLoginSuccess()
+  layui.use(['form','layer'], function() {
+    var form = layui.form()
+    form.on('submit(login)', function(data) {
+      Util.post('/auth/login', data.field).then(data => {
+        Msg.sendLoginSuccess()
+      },Util.defaultReject)
+      return false
     })
   })
+
   // $('#login').bind('click', function() {
   //   $.post('http://localhost:8000'+'/auth/login', {
   //     username: document.getElementById('username').value,

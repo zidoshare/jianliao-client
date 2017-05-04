@@ -1,7 +1,7 @@
 const createMsg = require('../../tools/createMsg')
 
 const msg = {
-  toChat:createMsg('register')
+  toLogin:createMsg('to-login')
 }
 
 module.exports = msg

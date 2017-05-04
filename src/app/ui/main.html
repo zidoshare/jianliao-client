@@ -22,7 +22,6 @@
         <div class="layui-tab-content j-scroll">
           <div class="layui-tab-item layui-show">
             <div class="layui-collapse" id="friend-container">
-              <div class="loading" id="friend-loading"></div>
             </div>
           </div>
           <div class="layui-tab-item">
@@ -33,6 +32,8 @@
       </div>
     </div>
     <div class="j-bottom">
+      <span id="addFriends"><i class="layui-icon">&#xe654;</i></span>
+      <span id="update"><i class="layui-icon">&#xe642;</i></span>
     </div>
   </div>
   <!-- All of the Node.js APIs are available in this renderer process. -->
@@ -44,17 +45,17 @@
     <div class="j-avatar-container">
       <div class="j-avatar" style="background-image:url({{imageUrl}})"></div>
     </div>
-    <div class="j-top-info layui-form">
+    <form class="j-top-info layui-form">
       <div class="layui-form-item">
-        <label class="layui-form-label">{{nickname}}</label>
+        <label class="layui-form-label" lay-filter="nickname">{{nickname}}</label>
         <div class="layui-input-block">
-          <input type="checkbox" name="switch" lay-skin="switch" lay-text="在线|隐身" checked>
+          <input type="checkbox" name="switch" lay-skin="switch" lay-text="在线|隐身" lay-filter="checkStatus" checked>
         </div>
       </div>
-      <div class="layui-form-item">
+      <div class="layui-form-item sp">
         <label class="sign j-item-i"><nobr>{{sign}}</nobr></label>
       </div>
-    </div>
+    </form>
 </script>
 <script id="container-template" type="x-tmpl-mustache">
   {{#data}}
@@ -63,7 +64,7 @@
     <div class="layui-colla-content">
       <ul class="j-list">
       {{#users}}
-        <li class="j-child j-item">
+        <li class="j-child j-item" data-username="{{username}}" data-nickname="{{nickname}}" data-imageUrl="{{imageUrl}}">
           <div class="min-container">
             <div class="j-avatar" style="background-image:url({{imageUrl}})"></div>
           </div>
@@ -80,40 +81,174 @@
   </div>
   {{/data}}
 </script>
+<script id="add-template" type="x-tmpl-mustache">
+<form class="layui-form">
+  <div class="layui-form-item">
+    <label class="layui-form-label">好友</label>
+    <div class="layui-input-block">
+      <input type="text" name="friendName" required  lay-verify="required" placeholder="好友的名字或者账号" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">输入分组</label>
+    <div class="layui-input-block">
+      <input name="groupName"  class="layui-input" placeholder="现有或新建分组" type="text" lay-verify="required"/>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <div class="layui-input-block">
+      <button class="layui-btn" lay-submit lay-filter="add-friend-submit">立即提交</button>
+    </div>
+  </div>
+</form>
+</script>
+<script id="update-template" type="x-tmpl-mustache">
+<form class="layui-form">
+  <div class="layui-form-item">
+    <label class="layui-form-label">账号</label>
+    <div class="layui-input-block">
+      <input type="text" name="username" placeholder="账号" autocomplete="off" class="layui-input"/>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">密码</label>
+    <div class="layui-input-block">
+      <input type="password" name="password" placeholder="密码" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">昵称</label>
+    <div class="layui-input-block">
+      <input type="text" name="nickname"  placeholder="昵称" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">个性签名</label>
+    <div class="layui-input-block">
+      <input type="text" name="sign"  placeholder="个性签名" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <div class="layui-input-block">
+      <button class="layui-btn" lay-submit lay-filter="update-submit">立即提交</button>
+    </div>
+  </div>
+</form>
+</script>
 <script>
-
-  var Util = require('./js/util')
-  var toChat = require('../renderer-process/main')
-  var Mustache = require('mustache')
-  window.onload = function() {
-    Util.post('/api/user/now').then(function(json) {
-      var template = document.getElementById('mine-template').innerHTML;
-      Mustache.parse(template); // optional, speeds up future uses
-      var rendered = Mustache.render(template, json.data);
-      document.getElementById('j-top').innerHTML = rendered;
-    })
-    Util.autoRefresh(document.getElementById('friend-loading'),'正在加载.','正在加载..','正在加载...')
+var Util = require('./js/util')
+var toChat = require('../renderer-process/main')
+var Mustache = require('mustache')
+window.onload = function() {
+  var mineData = null
+  var friendData = null
+  function updateFriend() {
     Util.post('/api/user/friends/index').then(function(json) {
+      friendData = json
       var template = document.getElementById('container-template').innerHTML;
       Mustache.parse(template); // optional, speeds up future uses
       var rendered = Mustache.render(template, json);
-      //document.getElementById('friend-container').innerHTML = rendered;
+      document.getElementById('friend-container').innerHTML = rendered;
       Util.bind('.j-item', 'click', (target) => {
         var doms = document.querySelectorAll('.j-item')
         for (var i = 0; i < doms.length; i++)
           Util.removeClass(doms[i], 'item-select')
         Util.addClass(target, 'item-select')
       }, '#friend-container')
-
       Util.bind('.j-item', 'dblclick', (target) => {
-        toChat()
+        let username = target.dataset.username
+        let nickname = target.dataset.nickname
+        toChat(username,nickname)
+      }, '#friend-container')
+      layui.use(['element'], function() {
+        var element = layui.element()
+        element.init()
       })
-      layui.use(['form', 'element'], function() {
-        var form = layui.form();
+    })
+  }
+  function updateUser(){
+    Util.post('/api/user/now').then(function(json) {
+      mineData = json
+      var template = document.getElementById('mine-template').innerHTML;
+      Mustache.parse(template); // optional, speeds up future uses
+      var rendered = Mustache.render(template, json.data);
+      document.getElementById('j-top').innerHTML = rendered;
+      layui.use(['form'], function() {
+        var form = layui.form()
+        form.render()
+        form.on('switch(checkStatus)', function(data) {
+          console.log(this.checked)
+          Util.post('/api/user/online?mode=' + (this.checked ? 1 : 0)).then(function(json) {
+            console.log(json)
+          })
+        })
+      })
+    })
+  }
+  function connect(){
+    Util.socket('/chat', {
+      address: '/user/queue/greetings',
+      func: function(response) {
+        data = JSON.parse(response.body)
+        if(data.type=='add_user' || data.type == 'friend_update'){
+          updateFriend()
+        }
+      }
+    }).then(function(){
+        Util.post('/api/user/online?mode=1').then(function(json){
+        console.log(json)
       })
     })
   }
 
+  updateUser()
+  connect()
+  updateFriend()
+  Util.bind('#addFriends','click',function(){
+      layui.use(['layer','form','element'],function(){
+        var layer = layui.layer
+        var form = layui.form()
+        layer.open({
+          title:'添加好友',
+          content:document.getElementById('add-template').innerHTML,
+          btn:null,
+          offset: 'b',
+        })
+        form.render()
+        form.on('submit(add-friend-submit)',function(data){
+            Util.post('/api/user/addFriend',data.field).then(function(response){
+              layer.msg(response.message,{
+                icon:1
+              })
+              updateFriend()
+            },Util.defaultReject)
+            return false
+        })
+      })
+  })
+  Util.bind('#update','click',function(){
+      layui.use(['layer','form'],function(){
+        var layer = layui.layer
+        var form = layui.form()
+        layer.open({
+          title:'修改信息',
+          content:document.getElementById('update-template').innerHTML,
+          btn:null,
+          offset: 'b',
+        })
+        form.render()
+        form.on('submit(update-submit)',function(data){
+            Util.post('/api/user/update',data.field).then(function(response){
+              layer.msg(response.message,{
+                icon:1
+              })
+              updateUser()
+            },Util.defaultReject)
+            return false
+        })
+      })
+  })
+}
 </script>
 
 </html>

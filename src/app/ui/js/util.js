@@ -73,7 +73,7 @@ const Util = {
     if (container == null || target == container) {
       domList.map((d) => {
         d.addEventListener(eventName, (e) => {
-          func(e.target)
+          func(d)
           e.stopPropagation()
         })
       })
@@ -99,8 +99,9 @@ const Util = {
             return
           if (!Util.inArray(domList, eventTarget)) {
             arguments.callee()
-          } else
+          } else{
             func(eventTarget)
+          }
           e.stopPropagation()
         })()
       }
@@ -138,6 +139,37 @@ const Util = {
       + "(/[0-9a-z_!~*'().;?:@&=+$,%#-]+)+/?)$"
     return new RegExp(strRegex).test(url)
   },
+  defaultResolve:function(data){
+    layui.use('layer', function() {
+      var layer = layui.layer;
+      layer.msg(data.message,{
+        icon:1
+      })
+    })
+  },
+  defaultReject: function(data) {
+    layui.use('layer', function() {
+      var layer = layui.layer;
+      if (data.status == -1) {
+        layer.open({
+          content: data.message,
+          btn: ['确认'],
+        })
+      } else if (data.status == 401) {
+        layer.msg('用户认证失败', {
+          icon: 5
+        })
+      } else if (data.status == -2) {
+        layer.msg(data.message, {
+          icon: 5
+        })
+      } else {
+        layer.msg(data.message || '未知异常', {
+          icon: 2
+        })
+      }
+    })
+  },
   get: function(url, params, headers) {
     if (!Util.isUrl(url))
       url = 'http://localhost:8000' + url
@@ -161,9 +193,7 @@ const Util = {
           if (response.ok) {
             return response.json();
           } else {
-            reject({
-              status: response.status
-            })
+            reject(response)
           }
         })
         .then((response) => {
@@ -198,36 +228,42 @@ const Util = {
           if (response.ok) {
             return response.json();
           } else {
-            console.err(response)
             reject({
-              status: response.status
+              status: response.status,
+              message: '未知的服务器错误 code:' + response.status
             })
           }
         })
         .then((response) => {
-          resolve(response);
+          if (response.success)
+            resolve(response)
+          else
+            reject({
+              status: -2,
+              message: response.message
+            })
         })
         .catch((err) => {
           reject({
-            status: -1
+            status: -1,
+            message: '程序异常,请关闭重试'
           });
         })
     })
   },
-  autoRefresh: function(dom, ...args) {
-    var i = 0
-    console.log(args)
-    function animation() {
-      if (i >= args.length)
-        i = 0
-      dom.innerHTML = args[i++]
-      if(dom == null){
-        console.log('stop')
-        return
-      }
-      window.requestAnimationFrame(animation)
-    }
-    animation()
+  socket: function(endPoint, ...sb) {
+    return new Promise(function(resolve, reject) {
+      require('./stomp.js')
+      var SockJS = require('./sockjs.min.js')
+      var socket = new SockJS(Http.host + endPoint)
+      var stompClient = Stomp.over(socket) //使用Stomp.over(ws)方法，ws参数可以指定其他类型的WebSocket（如SockJS包装的WebSocket）
+      stompClient.connect({}, function(frame) {
+        sb.map(function(opt) {
+          stompClient.subscribe(opt.address, opt.func)
+        })
+      })
+      resolve(stompClient)
+    })
   }
 }
 

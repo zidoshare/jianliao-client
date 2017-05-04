@@ -49,10 +49,11 @@ app.on('ready', () => {
       alwaysOnTop: true,
       resizable: false,
     }), win)
-    main.on('close', () => {
+    win = main
+    win.on('close', () => {
+      win = null
       app.quit()
     })
-    win = main
   })
   ipcMain.on('chat', (event, ...arg) => {
     let chat = handleReplaceWindow(createWindow({
@@ -73,14 +74,27 @@ app.on('ready', () => {
     }), win)
     win = main
   })
-  ipcMain.on('chat-with', (event, ...args) => {
-    createWindow({
+  ipcMain.on('to-login', (event, ...args) => {
+    let main = handleReplaceWindow(createWindow({
+      pathname: path.join(__dirname, '../ui', 'index.html'),
+      width: 445,
+      height: 380,
+      resizable: false,
+    }),win)
+    win = main
+  })
+  ipcMain.on('chat-with', (event, username, nickname) => {
+    let win = createWindow({
       pathname: path.join(__dirname, '../ui', 'chat.html'),
       width: 600,
       height: 535,
       resizable: false,
       frame: false,
     })()
+    win.webContents.on('did-finish-load', function() {
+      console.log(username)
+      win.webContents.send('initial', username, nickname)
+    })
   })
   ipcMain.on('close-chat', (event) => {
     BrowserWindow.getFocusedWindow().close()
